@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        main {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        button {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            position: absolute;
+            width: 150px;
+            height: 50px;
+        }
+        p {
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <button>
+            RANDOM
+        </button>
+    </main>
+    <script>
+        const main = document.querySelector("main");
+        const { height: mainHeight, width: mainWidth } = main.getBoundingClientRect();
+        const button = document.querySelector("button");
+        const { top: buttonTop, right: buttonRight, bottom: buttonBottom, left: buttonLeft } = button.getBoundingClientRect();
+
+        const handleButtonClick = () => {
+            const paragraph = createParagraph()
+            moveParagraph(paragraph)
+            paragraph.style.color = createRandomColor()
+        }
+
+        const createRandomDate = () => {
+            const RANDOMIZER_LENGTH = 1645000000000
+            const randomDate = new Date(Date.now()-RANDOMIZER_LENGTH*Math.random())
+            return randomDate.toLocaleDateString()
+        }
+
+        const createRandomColor = () => {
+            const RGB_MAX_VALUE = 256
+            return `rgb(${Math.floor(Math.random()*RGB_MAX_VALUE)}, ${Math.floor(Math.random()*RGB_MAX_VALUE)}, ${Math.floor(Math.random()*RGB_MAX_VALUE)})`
+        }
+
+        const createParagraph = () => {
+            const paragraph = document.createElement("p");
+            const randomDate = createRandomDate()
+            paragraph.appendChild(document.createTextNode(randomDate));
+            main.appendChild(paragraph);
+            return paragraph;
+        }
+
+        const isParagraphXBetween = (paragraphRight, paragraphLeft) => {
+            return (paragraphLeft > buttonLeft && paragraphLeft < buttonRight) || (paragraphRight > buttonLeft && paragraphRight < buttonRight)
+        }
+
+        const isParagraphYBetween = (paragraphTop, paragraphBottom) => {
+            return (paragraphTop > buttonTop && paragraphTop < buttonBottom) || (paragraphBottom > buttonTop && paragraphBottom < buttonBottom)
+        }
+
+        const isParaghphAboveButton = (paragraph) => {
+            const { top: paragraphTop, right: paragraphRight, bottom: paragraphBottom, left: paragraphLeft } = paragraph.getBoundingClientRect();
+            return isParagraphXBetween(paragraphRight, paragraphLeft) && isParagraphYBetween(paragraphTop, paragraphBottom)
+        }
+
+        const moveParagraph = (paragraph) => {
+            const { height: paragraphHeight, width: paragraphWidth } = paragraph.getBoundingClientRect();
+            paragraph.style.top = generateRandomHeight(paragraphHeight) + 'px'
+            paragraph.style.left = generateRandomWidth(paragraphWidth) + 'px'
+            if(isParaghphAboveButton(paragraph)){
+                moveParagraph(paragraph)
+            }
+        }
+
+        const generateRandomHeight = (paragraphHeight) => {
+            const randomPosition = Math.random()*mainHeight;
+            if(randomPosition < paragraphHeight) return randomPosition
+            const height = randomPosition-paragraphHeight;
+            return height
+        }
+
+        const generateRandomWidth = (paragraphWidth) => {
+            const randomPosition = Math.random()*mainWidth;
+            if(randomPosition < paragraphWidth) return randomPosition
+            const width = randomPosition-paragraphWidth
+            return width
+        }
+
+        button.addEventListener('click', handleButtonClick);
+    </script>
+</body>
+</html>
